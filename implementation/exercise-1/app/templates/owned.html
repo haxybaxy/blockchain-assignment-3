@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}My Items{% endblock %}
+{% block content %}
+<h1>My Items</h1>
+<p class="lede">
+  Ownership is read live from the contract. Each purchase creates an on-chain receipt —
+  your browser just formats what the blockchain returns.
+</p>
+
+{% if not summary %}
+  <p>You don't own anything yet. Go buy something from the <a href="{{ url_for('index') }}">products page</a>.</p>
+{% else %}
+  <h2>Aggregated holdings</h2>
+  <table class="data">
+    <thead><tr><th>Product</th><th>Quantity owned</th></tr></thead>
+    <tbody>
+      {% for row in summary %}
+        <tr>
+          <td>{{ row.name }} <small class="muted">#{{ row.productId }}</small></td>
+          <td><strong>{{ row.quantity }}</strong></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Purchase history</h2>
+  <table class="data">
+    <thead>
+      <tr>
+        <th>Receipt #</th><th>Product</th><th>Qty</th><th>Unit price</th><th>Total</th><th>When</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in receipts %}
+        <tr>
+          <td>#{{ r.id }}</td>
+          <td>{{ r.productName }}</td>
+          <td>{{ r.quantity }}</td>
+          <td>{{ '%.4f' % r.unitPriceEth }} ETH</td>
+          <td>{{ '%.4f' % r.totalEth }} ETH</td>
+          <td>{{ r.timestamp }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}

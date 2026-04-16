@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Products — Vending Machine{% endblock %}
+{% block content %}
+<h1>Products</h1>
+<p class="lede">Stock and prices are read live from the smart contract. Pick a quantity and buy.</p>
+
+{% if not products %}
+  <p>No products listed yet. The contract owner can add products from the Admin panel.</p>
+{% endif %}
+
+<div class="grid">
+  {% for p in products %}
+    <article class="card {% if not p.active %}card-inactive{% endif %}">
+      <header>
+        <h2>{{ p.name }}</h2>
+        <span class="price">{{ '%.4f' % p.priceEth }} ETH</span>
+      </header>
+      <dl>
+        <dt>Product ID</dt><dd>#{{ p.id }}</dd>
+        <dt>Stock</dt>
+        <dd>
+          {% if p.stock == 0 %}
+            <span class="badge badge-danger">SOLD OUT</span>
+          {% elif p.stock < 3 %}
+            <span class="badge badge-warn">{{ p.stock }} left</span>
+          {% else %}
+            {{ p.stock }} in stock
+          {% endif %}
+        </dd>
+        <dt>Status</dt>
+        <dd>{% if p.active %}Available{% else %}<span class="badge">PAUSED</span>{% endif %}</dd>
+      </dl>
+      {% if p.active and p.stock > 0 %}
+        <form method="post" action="{{ url_for('buy', product_id=p.id) }}">
+          <label>
+            Qty
+            <input type="number" name="quantity" value="1" min="1" max="{{ p.stock }}" />
+          </label>
+          <button type="submit">Buy</button>
+        </form>
+      {% else %}
+        <button type="button" disabled>Buy</button>
+      {% endif %}
+    </article>
+  {% endfor %}
+</div>
+{% endblock %}
