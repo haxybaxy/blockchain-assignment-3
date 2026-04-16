@@ -1,0 +1,15 @@
+services:
+  ganache:
+    image: trufflesuite/ganache:latest
+    container_name: ticketing-ganache
+    ports:
+      - "8545:8545"
+    command:
+      - --server.host=0.0.0.0
+      - --server.port=8545
+      - --chain.chainId=1337
+      - --chain.networkId=1337
+      - --wallet.deterministic=true
+      - --wallet.totalAccounts=10
+      - --wallet.defaultBalance=100
+      - --miner.blockGasLimit=12000000

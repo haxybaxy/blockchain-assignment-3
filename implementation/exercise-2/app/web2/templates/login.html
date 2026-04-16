@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}Log in{% endblock %}
+{% block content %}
+<h1>Log in</h1>
+<div class="two-col">
+  <form class="panel" method="post" action="{{ url_for('login') }}">
+    <h2>Existing users</h2>
+    <label>Email <input type="email" name="email" required /></label>
+    <label>Password <input type="password" name="password" required /></label>
+    <button type="submit">Log in</button>
+    <p class="muted">
+      Seeded accounts for testing:
+      <code>admin@example.com</code> / <code>admin</code>,
+      <code>alice@example.com</code> / <code>alice</code>,
+      <code>bob@example.com</code> / <code>bob</code>.
+    </p>
+  </form>
+  <form class="panel" method="post" action="{{ url_for('register') }}">
+    <h2>Create account</h2>
+    <label>Email <input type="email" name="email" required /></label>
+    <label>Password <input type="password" name="password" required minlength="3" /></label>
+    <button type="submit">Register</button>
+  </form>
+</div>
+{% endblock %}

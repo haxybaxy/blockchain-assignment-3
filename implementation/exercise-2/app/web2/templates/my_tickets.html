@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}My Tickets{% endblock %}
+{% block content %}
+<h1>My Tickets</h1>
+{% if not tickets %}
+  <p>You don't hold any tickets yet.</p>
+{% else %}
+  <table class="data">
+    <thead>
+      <tr>
+        <th>#</th><th>Event</th><th>Face value</th><th>Status</th><th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for t in tickets %}
+        <tr>
+          <td>#{{ t.id }}</td>
+          <td>{{ t.event.name }} <small class="muted">(event #{{ t.event_id }})</small></td>
+          <td>{{ '%.4f' % wei_to_eth(t.original_price_wei) }} ETH</td>
+          <td>
+            {% if t.for_sale %}
+              <span class="badge badge-warn">LISTED @ {{ '%.4f' % wei_to_eth(t.listing_price_wei) }} ETH</span>
+            {% else %}
+              Held
+            {% endif %}
+          </td>
+          <td class="actions">
+            {% if t.for_sale %}
+              <form method="post" action="{{ url_for('cancel_list', ticket_id=t.id) }}" class="inline">
+                <button type="submit">Cancel listing</button>
+              </form>
+            {% else %}
+              <form method="post" action="{{ url_for('transfer', ticket_id=t.id) }}" class="inline">
+                <input type="email" name="recipient" placeholder="recipient@email" required />
+                <button type="submit">Transfer</button>
+              </form>
+              <form method="post" action="{{ url_for('list_for_resale', ticket_id=t.id) }}" class="inline">
+                <input type="number" step="0.0001" min="0.0001" name="priceEth" placeholder="price ETH" required />
+                <button type="submit">List for resale</button>
+              </form>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="muted">Resale is capped at 2× face value (same rule as the web3 contract).</p>
+{% endif %}
+{% endblock %}

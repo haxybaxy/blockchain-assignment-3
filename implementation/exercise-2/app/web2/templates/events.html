@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<h1>Events</h1>
+<p class="lede">Browse available events and buy tickets. Sold-out events stay listed with their final count.</p>
+
+{% if not events %}
+  <p>No events yet.</p>
+{% endif %}
+
+<div class="grid">
+  {% for e in events %}
+    <article class="card {% if not e.active %}card-inactive{% endif %}">
+      <header>
+        <h2>{{ e.name }}</h2>
+        <span class="price">{{ '%.4f' % wei_to_eth(e.price_wei) }} ETH</span>
+      </header>
+      <dl>
+        <dt>Event ID</dt><dd>#{{ e.id }}</dd>
+        <dt>Remaining</dt>
+        <dd>
+          {% if e.remaining == 0 %}
+            <span class="badge badge-danger">SOLD OUT</span>
+          {% else %}
+            {{ e.remaining }} / {{ e.max_supply }}
+          {% endif %}
+        </dd>
+        <dt>Status</dt>
+        <dd>{% if e.active %}Active{% else %}<span class="badge">PAUSED</span>{% endif %}</dd>
+      </dl>
+      {% if current_user.is_authenticated and e.active and e.remaining > 0 %}
+        <form method="post" action="{{ url_for('buy_ticket', event_id=e.id) }}">
+          <button type="submit">Buy ticket</button>
+        </form>
+      {% elif not current_user.is_authenticated %}
+        <p class="muted">Log in to buy.</p>
+      {% else %}
+        <button type="button" disabled>Unavailable</button>
+      {% endif %}
+    </article>
+  {% endfor %}
+</div>
+
+{% if listed %}
+  <h2>Secondary market</h2>
+  <table class="data">
+    <thead>
+      <tr><th>Ticket #</th><th>Event</th><th>Seller</th><th>Asking</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for t in listed %}
+        <tr>
+          <td>#{{ t.id }}</td>
+          <td>{{ t.event.name }}</td>
+          <td>{{ t.owner.email }}</td>
+          <td>{{ '%.4f' % wei_to_eth(t.listing_price_wei) }} ETH</td>
+          <td>
+            {% if t.owner_id != current_user.id %}
+              <form method="post" action="{{ url_for('buy_resale', ticket_id=t.id) }}" class="inline">
+                <button type="submit">Buy</button>
+              </form>
+            {% else %}
+              <span class="muted">your listing</span>
+            {% endif %}
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+{% endblock %}
