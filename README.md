@@ -1,3 +1,5 @@
+bro milan im so sorry I forgot to submit on time but the commits for the implementation are before the deadline I hope you can accept it 🙏
+
 # Assignment 3 — Smart Contracts and DApp Development
 
 Two exercises, each self-contained with its own Hardhat project, contracts, tests, and client apps.
